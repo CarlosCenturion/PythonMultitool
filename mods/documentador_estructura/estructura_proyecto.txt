@@ -1,0 +1,9 @@
+Estructura del Proyecto
+==================================================
+
+documentador_estructura/
+    documentador_estructura.py
+    estructura_proyecto.txt
+    requirements.txt
+    __init__.py
+    __pycache__/

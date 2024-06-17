@@ -1,0 +1,4 @@
+# requirements.txt
+
+# Ejemplo de dependencias
+# requests==2.25.1
