@@ -1,4 +1,4 @@
-colorama
 GPUtil
+colorama
 psutil
 pynvml

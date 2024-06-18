@@ -1,4 +1,10 @@
 
-pandas
+pyzbar
+scipy
+gensim
+qrcode
 selenium==4.2.0
+opencv-python
 colorama
+Pillow
+pandas
