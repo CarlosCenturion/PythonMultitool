@@ -1,6 +1,6 @@
-opencv-python
 scipy
 qrcode
 gensim
 Pillow
 pyzbar
+opencv-python

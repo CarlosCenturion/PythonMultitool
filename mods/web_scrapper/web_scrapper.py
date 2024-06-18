@@ -3,14 +3,17 @@ import re
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
+from colorama import init, Fore
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
 }
 
+init(autoreset=True)
+
 def save_file(url, folder):
     try:
-        print(f"Downloading {url}")
+        print(f"{Fore.YELLOW}Downloading {url}")
         response = requests.get(url, headers=headers)
         response.raise_for_status()
         file_name = os.path.basename(urlparse(url).path)
@@ -19,10 +22,10 @@ def save_file(url, folder):
         file_path = os.path.join(folder, file_name)
         with open(file_path, 'wb') as file:
             file.write(response.content)
-        print(f"Saved {file_name} to {folder}")
+        print(f"{Fore.GREEN}Saved {file_name} to {folder}")
         return file_name
     except requests.exceptions.RequestException as e:
-        print(f"Failed to download {url}: {e}")
+        print(f"{Fore.RED}Failed to download {url}: {e}")
         return None
 
 def download_resources(soup, base_url, output_folder):
@@ -46,16 +49,17 @@ def download_resources(soup, base_url, output_folder):
                     element[attribute] = os.path.join(output_folder, file_name)
 
 def download_site(url, output_folder):
+    output_folder = os.path.join('Descargas', 'Webs', output_folder)
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
     try:
-        print(f"Downloading main page: {url}")
+        print(f"{Fore.YELLOW}Downloading main page: {url}")
         response = requests.get(url, headers=headers)
         response.raise_for_status()
         html_content = response.text
     except requests.exceptions.RequestException as e:
-        print(f"Failed to download the main page: {e}")
+        print(f"{Fore.RED}Failed to download the main page: {e}")
         return
 
     soup = BeautifulSoup(html_content, 'html.parser')
@@ -64,7 +68,7 @@ def download_site(url, output_folder):
     index_path = os.path.join(output_folder, 'index.html')
     with open(index_path, 'w', encoding='utf-8') as file:
         file.write(soup.prettify())
-    print(f"Saved main page to {index_path}")
+    print(f"{Fore.GREEN}Saved main page to {index_path}")
 
     # Create a folder for all resources
     resource_folder = os.path.join(output_folder, 'resources')
@@ -76,17 +80,12 @@ def download_site(url, output_folder):
     # Save the updated index.html with local paths
     with open(index_path, 'w', encoding='utf-8') as file:
         file.write(soup.prettify())
-    print(f"Updated main page with local paths: {index_path}")
+    print(f"{Fore.GREEN}Updated main page with local paths: {index_path}")
 
 def ejecutar():
-    website_url = input("Ingresa el enlace del sitio web que quieres descargar: ")  # Reemplaza esto con la URL del sitio web que quieres descargar
-    output_directory = input("Nombre de la carpeta donde descargar el sitio: ")
+    website_url = input(f"{Fore.YELLOW}Ingresa el enlace del sitio web que quieres descargar: ")
+    output_directory = input(f"{Fore.YELLOW}Nombre de la carpeta donde descargar el sitio: ")
     download_site(website_url, output_directory)
     
 if __name__ == "__main__":
     ejecutar()
-    
-
-
-
-

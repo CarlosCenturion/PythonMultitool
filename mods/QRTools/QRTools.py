@@ -7,17 +7,21 @@ import os
 
 init(autoreset=True)
 
-def generar_qr(contenido, ruta_salida):
+def generar_qr(contenido, ruta_salida, version, fill_color, back_color, box_size, border):
     qr = qrcode.QRCode(
-        version=1,
+        version=version,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
-        box_size=10,
-        border=4,
+        box_size=box_size,
+        border=border,
     )
     qr.add_data(contenido)
     qr.make(fit=True)
 
-    img = qr.make_image(fill_color="black", back_color="white")
+    img = qr.make_image(fill_color=fill_color, back_color=back_color)
+    
+    # Crear el directorio si no existe
+    os.makedirs(os.path.dirname(ruta_salida), exist_ok=True)
+    
     img.save(ruta_salida)
     print(f"{Fore.GREEN}Código QR generado y guardado en {ruta_salida}")
 
@@ -38,8 +42,16 @@ def ejecutar():
 
         if eleccion == "1":
             contenido = input(f"{Fore.YELLOW}Introduce el contenido del Código QR: ")
-            ruta_salida = input(f"{Fore.YELLOW}Introduce la ruta de salida para guardar el Código QR (ej. qr_code.png): ")
-            generar_qr(contenido, ruta_salida)
+            nombre_archivo = input(f"{Fore.YELLOW}Introduce el nombre del archivo para guardar el Código QR (ej. qr_code.png): ")
+            ruta_salida = os.path.join('Descargas', 'QRCodes', nombre_archivo)
+            
+            version = int(input(f"{Fore.YELLOW}Introduce la versión (1-40): "))
+            fill_color = input(f"{Fore.YELLOW}Introduce el color de relleno (fill_color, ej. black): ")
+            back_color = input(f"{Fore.YELLOW}Introduce el color de fondo (back_color, ej. white): ")
+            box_size = int(input(f"{Fore.YELLOW}Introduce el tamaño de cada caja (box_size, ej. 10): "))
+            border = int(input(f"{Fore.YELLOW}Introduce el tamaño del borde (border, ej. 4): "))
+            
+            generar_qr(contenido, ruta_salida, version, fill_color, back_color, box_size, border)
         elif eleccion == "2":
             ruta_imagen = input(f"{Fore.YELLOW}Introduce la ruta de la imagen del Código QR a leer: ")
             if os.path.exists(ruta_imagen):
