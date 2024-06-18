@@ -1,0 +1,30 @@
+[
+    {
+        "nombre": "Web Alter Go",
+        "tareas": {
+            "To Do": [
+                "Cambiar Textos",
+                "Armar Textos de Contenido"
+            ],
+            "In Progress": [
+                "Cambiar Imagenes"
+            ],
+            "Done": [
+                "Crear Logo"
+            ]
+        }
+    },
+    {
+        "nombre": "Muebles",
+        "tareas": {
+            "To Do": [
+                "Organizar Material",
+                "Comprar Clavos Tornillos Tuercas y Demas"
+            ],
+            "In Progress": [
+                "Realizar Inventario"
+            ],
+            "Done": []
+        }
+    }
+]

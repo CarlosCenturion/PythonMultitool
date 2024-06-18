@@ -1,0 +1,4 @@
+colorama
+GPUtil
+psutil
+pynvml
