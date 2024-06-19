@@ -1,7 +1,7 @@
 colorama
-pyaudio
-spacy
-textblob
-googletrans==4.0.0-rc1
 SpeechRecognition
 nltk
+textblob
+spacy
+googletrans==4.0.0-rc1
+pyaudio

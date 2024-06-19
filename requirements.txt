@@ -1,10 +1,12 @@
 
-pyzbar
-scipy
-gensim
-qrcode
+numpy
 selenium==4.2.0
-opencv-python
 colorama
-Pillow
 pandas
+scipy
+opencv-python
+qrcode
+gensim
+Pillow
+pyzbar
+Flask==2.0.1

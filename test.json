@@ -1,0 +1,8 @@
+{
+    "cluster" : "sosHost",     
+    "node_type" : "IMU",   
+    "nodes" :  { "list": [ "MAC1" , "MAC2" , "MAC3" , "MAC4" ]},
+    "sensor_type_attributes" : { "list": [{ "sensor_type": "IMU", "sensor_attributes": ["acceleration","accelerometer","angular_velocity"]}]},
+    "cron_expression" : "**/5**",
+    "endpoint" : "http://sos.api.test"   
+}

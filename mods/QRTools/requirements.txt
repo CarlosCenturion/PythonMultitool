@@ -1,6 +1,6 @@
-scipy
-qrcode
-gensim
 Pillow
-pyzbar
+gensim
+qrcode
 opencv-python
+scipy
+pyzbar

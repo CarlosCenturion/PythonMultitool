@@ -1,91 +1,63 @@
+import importlib
 import os
-import re
-import requests
-from bs4 import BeautifulSoup
-from urllib.parse import urljoin, urlparse
+import sys
+import subprocess
 from colorama import init, Fore
-
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-}
 
 init(autoreset=True)
 
-def save_file(url, folder):
+def instalar_dependencias(ruta_reqs):
+    if os.path.exists(ruta_reqs):
+        print(f"{Fore.YELLOW}Instalando dependencias desde {ruta_reqs}...")
+        try:
+            subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', ruta_reqs])
+            print(f"{Fore.GREEN}Dependencias instaladas correctamente.")
+        except subprocess.CalledProcessError as e:
+            print(f"{Fore.RED}Error al instalar dependencias del módulo: {e}")
+    else:
+        print(f"{Fore.RED}No se encontró el archivo {ruta_reqs}.")
+
+def obtener_versiones():
+    versions_path = os.path.join(os.path.dirname(__file__), 'versions')
+    versiones = [f for f in os.listdir(versions_path) if f.startswith('v') and f.endswith('.py')]
+    return versiones
+
+def mostrar_menu(versiones):
+    print(f"{Fore.CYAN}Selecciona una versión del web scrapper para ejecutar:")
+    for idx, version in enumerate(versiones):
+        print(f"{Fore.CYAN}{idx + 1}. {version}")
+    print(f"{Fore.CYAN}{len(versiones) + 1}. Salir")
+    print(f"")
+
+def cargar_y_ejecutar_version(version):
+    version_path = os.path.join(os.path.dirname(__file__), 'versions', version)
     try:
-        print(f"{Fore.YELLOW}Downloading {url}")
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-        file_name = os.path.basename(urlparse(url).path)
-        if not file_name:  # Handle cases where the URL does not contain a file name
-            file_name = "index.html" if url.endswith('/') else url.split('/')[-1]
-        file_path = os.path.join(folder, file_name)
-        with open(file_path, 'wb') as file:
-            file.write(response.content)
-        print(f"{Fore.GREEN}Saved {file_name} to {folder}")
-        return file_name
-    except requests.exceptions.RequestException as e:
-        print(f"{Fore.RED}Failed to download {url}: {e}")
-        return None
-
-def download_resources(soup, base_url, output_folder):
-    resource_tags = {
-        'a': 'href',
-        'link': 'href',
-        'script': 'src',
-        'img': 'src',
-        'video': 'src',
-        'audio': 'src',
-        'source': 'src'
-    }
-
-    for tag, attribute in resource_tags.items():
-        for element in soup.find_all(tag):
-            resource_url = element.get(attribute)
-            if resource_url:
-                resource_url = urljoin(base_url, resource_url)
-                file_name = save_file(resource_url, output_folder)
-                if file_name:
-                    element[attribute] = os.path.join(output_folder, file_name)
-
-def download_site(url, output_folder):
-    output_folder = os.path.join('Descargas', 'Webs', output_folder)
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
-
-    try:
-        print(f"{Fore.YELLOW}Downloading main page: {url}")
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-        html_content = response.text
-    except requests.exceptions.RequestException as e:
-        print(f"{Fore.RED}Failed to download the main page: {e}")
-        return
-
-    soup = BeautifulSoup(html_content, 'html.parser')
-
-    # Save index.html
-    index_path = os.path.join(output_folder, 'index.html')
-    with open(index_path, 'w', encoding='utf-8') as file:
-        file.write(soup.prettify())
-    print(f"{Fore.GREEN}Saved main page to {index_path}")
-
-    # Create a folder for all resources
-    resource_folder = os.path.join(output_folder, 'resources')
-    os.makedirs(resource_folder, exist_ok=True)
-
-    # Download all resources
-    download_resources(soup, url, resource_folder)
-
-    # Save the updated index.html with local paths
-    with open(index_path, 'w', encoding='utf-8') as file:
-        file.write(soup.prettify())
-    print(f"{Fore.GREEN}Updated main page with local paths: {index_path}")
+        spec = importlib.util.spec_from_file_location(version[:-3], version_path)
+        modulo = importlib.util.module_from_spec(spec)
+        sys.modules[version[:-3]] = modulo
+        spec.loader.exec_module(modulo)
+        print(f"{Fore.GREEN}Módulo {version} cargado correctamente.")
+        modulo.ejecutar()
+    except ImportError as e:
+        print(f"{Fore.RED}Error al cargar el módulo {version}: {e}")
 
 def ejecutar():
-    website_url = input(f"{Fore.YELLOW}Ingresa el enlace del sitio web que quieres descargar: ")
-    output_directory = input(f"{Fore.YELLOW}Nombre de la carpeta donde descargar el sitio: ")
-    download_site(website_url, output_directory)
-    
+    while True:
+        versiones = obtener_versiones()
+        mostrar_menu(versiones)
+        eleccion = input(f"{Fore.YELLOW}Ingresa tu elección: ")
+        try:
+            eleccion_numero = int(eleccion)
+            if 1 <= eleccion_numero <= len(versiones):
+                version_seleccionada = versiones[eleccion_numero - 1]
+                cargar_y_ejecutar_version(version_seleccionada)
+            elif eleccion_numero == len(versiones) + 1:
+                print(f"{Fore.CYAN}Saliendo...")
+                break
+            else:
+                print(f"{Fore.RED}Opción no válida. Intenta de nuevo.")
+        except ValueError:
+            print(f"{Fore.RED}Entrada no válida. Por favor, ingresa un número.")
+
 if __name__ == "__main__":
     ejecutar()
