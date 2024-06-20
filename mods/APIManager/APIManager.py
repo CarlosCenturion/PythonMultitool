@@ -53,6 +53,28 @@ def actualizar_saldo(user_id, saldo):
     response = requests.put(url, json=data)
     return response.json()
 
+def obtener_pozo():
+    url = f'{BASE_URL}/pozo'
+    response = requests.get(url)
+    return response.json()
+
+def actualizar_pozo(amount):
+    url = f'{BASE_URL}/pozo'
+    data = {'amount': amount}
+    response = requests.put(url, json=data)
+    return response.json()
+
+def obtener_settings():
+    url = f'{BASE_URL}/settings'
+    response = requests.get(url)
+    return response.json()
+
+def actualizar_settings(win_probability, max_wins):
+    url = f'{BASE_URL}/settings'
+    data = {'win_probability': win_probability, 'max_wins': max_wins}
+    response = requests.put(url, json=data)
+    return response.json()
+
 def mostrar_permisos():
     permisos = {
         'admin': 'Acceso total a todas las funcionalidades.',
@@ -74,7 +96,11 @@ def ejecutar():
         print(f"{Fore.GREEN}4. Actualizar Permisos de Usuario")
         print(f"{Fore.GREEN}5. Iniciar Sesión")
         print(f"{Fore.GREEN}6. Actualizar Saldo de Usuario")
-        print(f"{Fore.GREEN}7. Salir")
+        print(f"{Fore.GREEN}7. Ver Pozo")
+        print(f"{Fore.GREEN}8. Actualizar Pozo")
+        print(f"{Fore.GREEN}9. Ver Ajustes")
+        print(f"{Fore.GREEN}10. Actualizar Ajustes")
+        print(f"{Fore.GREEN}11. Salir")
         eleccion = input(f"{Fore.YELLOW}Selecciona una opción: ")
 
         if eleccion == "1":
@@ -136,6 +162,33 @@ def ejecutar():
                 else:
                     print(f"{Fore.GREEN}{resultado['message']}")
         elif eleccion == "7":
+            pozo = obtener_pozo()
+            if 'error' in pozo:
+                print(f"{Fore.RED}{pozo['error']}")
+            else:
+                print(f"{Fore.CYAN}Pozo actual: {Fore.WHITE}{pozo['pozo']}")
+        elif eleccion == "8":
+            amount = input(f"{Fore.YELLOW}Nuevo monto del pozo: ")
+            resultado = actualizar_pozo(amount)
+            if 'error' in resultado:
+                print(f"{Fore.RED}{resultado['error']}")
+            else:
+                print(f"{Fore.GREEN}{resultado['message']}")
+        elif eleccion == "9":
+            settings = obtener_settings()
+            if 'error' in settings:
+                print(f"{Fore.RED}{settings['error']}")
+            else:
+                print(f"{Fore.CYAN}Probabilidad de ganar: {Fore.WHITE}{settings['win_probability']}, Máximo de victorias: {Fore.WHITE}{settings['max_wins']}")
+        elif eleccion == "10":
+            win_probability = input(f"{Fore.YELLOW}Nueva probabilidad de ganar (0 a 1): ")
+            max_wins = input(f"{Fore.YELLOW}Nuevo máximo de victorias: ")
+            resultado = actualizar_settings(win_probability, max_wins)
+            if 'error' in resultado:
+                print(f"{Fore.RED}{resultado['error']}")
+            else:
+                print(f"{Fore.GREEN}{resultado['message']}")
+        elif eleccion == "11":
             print(f"{Fore.CYAN}Saliendo...")
             break
         else:

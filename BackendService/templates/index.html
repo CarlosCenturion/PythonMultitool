@@ -27,11 +27,27 @@
     </div>
     <button id="logoutButton">Logout</button>
     <div id="adminSection" style="display: none;">
-        <h3>Admin Section: Update Pozo</h3>
+        <h3>Admin Section</h3>
         <form id="updatePozoForm">
             <input type="number" id="pozoAmount" placeholder="New pozo amount" required>
             <button type="submit">Update Pozo</button>
         </form>
+        <h3>Create User</h3>
+        <form id="createUserForm">
+            <input type="text" id="newUserName" placeholder="Username" required>
+            <input type="email" id="newUserEmail" placeholder="Email" required>
+            <input type="password" id="newUserPassword" placeholder="Password" required>
+            <select id="newUserPermissions">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select>
+            <button type="submit">Create User</button>
+        </form>
+        <h3>View Users</h3>
+        <button id="viewUsersButton">View Users</button>
+        <div id="usersList" style="display: none;">
+            <!-- Users will be listed here -->
+        </div>
     </div>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>

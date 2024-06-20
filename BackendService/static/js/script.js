@@ -6,6 +6,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const updatePozoForm = document.getElementById('updatePozoForm');
     const adminSection = document.getElementById('adminSection');
     const settingsSection = document.getElementById('settingsSection');
+    const createUserForm = document.getElementById('createUserForm');
+    const viewUsersButton = document.getElementById('viewUsersButton');
+    const usersList = document.getElementById('usersList');
     const resultMessage = document.getElementById('result');
 
     // Verificar si el usuario está logeado
@@ -148,6 +151,47 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('result').textContent = 'Pozo updated successfully';
             } else {
                 document.getElementById('result').textContent = result.error;
+            }
+        });
+
+        createUserForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const name = document.getElementById('newUserName').value;
+            const email = document.getElementById('newUserEmail').value;
+            const password = document.getElementById('newUserPassword').value;
+            const permissions = document.getElementById('newUserPermissions').value;
+
+            const response = await fetch('/user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, password, permissions })
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                document.getElementById('result').textContent = 'User created successfully';
+            } else {
+                document.getElementById('result').textContent = result.error;
+            }
+        });
+
+        viewUsersButton.addEventListener('click', async () => {
+            const response = await fetch('/users', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const users = await response.json();
+            if (response.ok) {
+                usersList.innerHTML = '';  // Clear previous list
+                users.forEach(user => {
+                    const userElement = document.createElement('div');
+                    userElement.textContent = `ID: ${user[0]}, Name: ${user[1]}, Email: ${user[2]}, Permissions: ${user[3]}, Balance: ${user[4]}`;
+                    usersList.appendChild(userElement);
+                });
+                usersList.style.display = 'block';
+            } else {
+                document.getElementById('result').textContent = 'Error fetching users';
             }
         });
     }
