@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create User</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <h1>Create User</h1>
+    <form id="createUserForm">
+        <input type="text" id="newUserName" placeholder="Username" required>
+        <input type="email" id="newUserEmail" placeholder="Email" required>
+        <input type="password" id="newUserPassword" placeholder="Password" required>
+        <select id="newUserPermissions">
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+        </select>
+        <button type="submit">Create User</button>
+    </form>
+    <button id="backButton">Back to Admin Panel</button>
+    <script src="{{ url_for('static', filename='js/create_user.js') }}"></script>
+</body>
+</html>

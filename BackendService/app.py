@@ -44,8 +44,64 @@ def index():
 def login_page():
     return render_template('login.html')
 
+@app.route('/admin')
+def admin_page():
+    if 'user_id' not in session or session.get('permissions') != 'admin':
+        return redirect(url_for('login_page'))
+    return render_template('admin.html')
+
+@app.route('/view-users')
+def view_users_page():
+    if 'user_id' not in session or session.get('permissions') != 'admin':
+        return redirect(url_for('login_page'))
+    return render_template('view_users.html')
+
+@app.route('/create-user')
+def create_user_page():
+    if 'user_id' not in session or session.get('permissions') != 'admin':
+        return redirect(url_for('login_page'))
+    return render_template('create_user.html')
+
+@app.route('/update-pozo')
+def update_pozo_page():
+    if 'user_id' not in session or session.get('permissions') != 'admin':
+        return redirect(url_for('login_page'))
+    return render_template('update_pozo.html')
+
+@app.route('/user/<int:user_id>', methods=['PUT'])
+def update_user(user_id):
+    if 'user_id' not in session or session.get('permissions') != 'admin':
+        return jsonify({'error': 'Permission denied'}), 403
+
+    data = request.get_json()
+    name = data.get('name')
+    email = data.get('email')
+    password = data.get('password')
+    permissions = data.get('permissions')
+
+    if not name or not email or not password or not permissions:
+        return jsonify({'error': 'All fields are required'}), 400
+
+    with sqlite3.connect(DATABASE) as conn:
+        cursor = conn.cursor()
+        cursor.execute('UPDATE users SET name = ?, email = ?, password = ?, permissions = ? WHERE id = ?', (name, email, password, permissions, user_id))
+        conn.commit()
+        if cursor.rowcount > 0:
+            return jsonify({'message': 'User updated successfully'})
+        else:
+            return jsonify({'error': 'User not found'}), 404
+
+@app.route('/settings')
+def settings_page():
+    if 'user_id' not in session or session.get('permissions') != 'admin':
+        return redirect(url_for('login_page'))
+    return render_template('settings.html')
+
 @app.route('/user', methods=['POST'])
 def add_user():
+    if 'user_id' not in session or session.get('permissions') != 'admin':
+        return jsonify({'error': 'Permission denied'}), 403
+
     data = request.get_json()
     name = data.get('name')
     email = data.get('email')
@@ -88,6 +144,9 @@ def get_user(user_id):
 
 @app.route('/user/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
+    if 'user_id' not in session or session.get('permissions') != 'admin':
+        return jsonify({'error': 'Permission denied'}), 403
+
     with sqlite3.connect(DATABASE) as conn:
         cursor = conn.cursor()
         cursor.execute('DELETE FROM users WHERE id = ?', (user_id,))
@@ -99,6 +158,9 @@ def delete_user(user_id):
 
 @app.route('/user/<int:user_id>/permissions', methods=['PUT'])
 def update_permissions(user_id):
+    if 'user_id' not in session or session.get('permissions') != 'admin':
+        return jsonify({'error': 'Permission denied'}), 403
+
     data = request.get_json()
     permissions = data.get('permissions')
     if not permissions:
@@ -140,6 +202,9 @@ def logout():
 
 @app.route('/user/<int:user_id>/saldo', methods=['PUT'])
 def update_saldo(user_id):
+    if 'user_id' not in session or session.get('permissions') != 'admin':
+        return jsonify({'error': 'Permission denied'}), 403
+
     data = request.get_json()
     saldo = data.get('saldo')
     if saldo is None:
@@ -156,6 +221,9 @@ def update_saldo(user_id):
 
 @app.route('/settings', methods=['GET', 'PUT'])
 def settings():
+    if 'user_id' not in session or session.get('permissions') != 'admin':
+        return jsonify({'error': 'Permission denied'}), 403
+
     if request.method == 'GET':
         with sqlite3.connect(DATABASE) as conn:
             cursor = conn.cursor()
@@ -204,6 +272,13 @@ def update_pozo():
         cursor.execute('UPDATE pozo SET amount = ? WHERE id = 1', (amount,))
         conn.commit()
         return jsonify({'message': 'Pozo updated successfully'})
+
+@app.route('/edit-user')
+def edit_user_page():
+    if 'user_id' not in session or session.get('permissions') != 'admin':
+        return redirect(url_for('login_page'))
+    return render_template('edit_user.html')
+
 
 @app.route('/user/<int:user_id>/apostar', methods=['POST'])
 def apostar(user_id):
@@ -270,7 +345,6 @@ def apostar(user_id):
         conn.commit()
 
     return jsonify({'resultado': resultado, 'nuevo_saldo': nuevo_saldo, 'nuevo_pozo': nuevo_pozo})
-
 
 def ejecutar():
     if not os.path.exists(DATABASE):

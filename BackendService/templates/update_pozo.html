@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Pozo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <h1>Update Pozo</h1>
+    <form id="updatePozoForm">
+        <input type="number" id="pozoAmount" placeholder="New pozo amount" required>
+        <button type="submit">Update Pozo</button>
+    </form>
+    <button id="backButton">Back to Admin Panel</button>
+    <script src="{{ url_for('static', filename='js/update_pozo.js') }}"></script>
+</body>
+</html>

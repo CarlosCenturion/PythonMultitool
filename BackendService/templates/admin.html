@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <h1>Admin Panel</h1>
+    <nav>
+        <ul>
+            <li><a href="/view-users">View Users</a></li>
+            <li><a href="/create-user">Create User</a></li>
+            <li><a href="/update-pozo">Update Pozo</a></li>
+            <li><a href="/settings">Settings</a></li>
+        </ul>
+    </nav>
+    <button id="logoutButton">Logout</button>
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>
