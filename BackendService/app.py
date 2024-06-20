@@ -1,9 +1,10 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, session, redirect, url_for
 import sqlite3
 import os
 import random
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'  # Reemplaza 'your_secret_key' con una clave secreta segura
 DATABASE = 'database.db'
 
 def init_db():
@@ -34,7 +35,6 @@ def init_db():
                             resultado TEXT NOT NULL,
                             FOREIGN KEY (user_id) REFERENCES users(id))''')
         conn.commit()
-
 
 @app.route('/')
 def index():
@@ -126,9 +126,17 @@ def login():
         cursor.execute('SELECT id, name, email, permissions, saldo, totalgastado, totalganado FROM users WHERE name = ? AND password = ?', (name, password))
         user = cursor.fetchone()
         if user:
+            session['user_id'] = user[0]
+            session['permissions'] = user[3]
             return jsonify({'id': user[0], 'name': user[1], 'email': user[2], 'permissions': user[3], 'saldo': user[4], 'totalgastado': user[5], 'totalganado': user[6]})
         else:
             return jsonify({'error': 'Invalid credentials'}), 401
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.pop('user_id', None)
+    session.pop('permissions', None)
+    return jsonify({'message': 'Logged out successfully'})
 
 @app.route('/user/<int:user_id>/saldo', methods=['PUT'])
 def update_saldo(user_id):
@@ -145,7 +153,7 @@ def update_saldo(user_id):
             return jsonify({'message': 'Saldo updated successfully'})
         else:
             return jsonify({'error': 'User not found'}), 404
-        
+
 @app.route('/settings', methods=['GET', 'PUT'])
 def settings():
     if request.method == 'GET':
@@ -170,7 +178,6 @@ def settings():
             conn.commit()
             return jsonify({'message': 'Settings updated successfully'})
 
-
 @app.route('/pozo', methods=['GET'])
 def get_pozo():
     with sqlite3.connect(DATABASE) as conn:
@@ -181,7 +188,23 @@ def get_pozo():
             return jsonify({'pozo': pozo[0]})
         else:
             return jsonify({'error': 'Pozo not found'}), 404
-        
+
+@app.route('/pozo', methods=['PUT'])
+def update_pozo():
+    if 'permissions' not in session or session['permissions'] != 'admin':
+        return jsonify({'error': 'Permission denied'}), 403
+
+    data = request.get_json()
+    amount = data.get('amount')
+    if amount is None:
+        return jsonify({'error': 'Amount is required'}), 400
+
+    with sqlite3.connect(DATABASE) as conn:
+        cursor = conn.cursor()
+        cursor.execute('UPDATE pozo SET amount = ? WHERE id = 1', (amount,))
+        conn.commit()
+        return jsonify({'message': 'Pozo updated successfully'})
+
 @app.route('/user/<int:user_id>/apostar', methods=['POST'])
 def apostar(user_id):
     data = request.get_json()
@@ -220,25 +243,33 @@ def apostar(user_id):
         if user_wins >= max_wins:
             return jsonify({'error': 'Max wins reached'}), 400
 
-        if random.random() < win_probability:
-            # Usuario gana
-            nuevo_saldo = saldo + cantidad
-            nuevo_pozo = pozo - cantidad
-            resultado = "ganaste"
-            cursor.execute('UPDATE users SET saldo = ?, totalganado = totalganado + ? WHERE id = ?', (nuevo_saldo, cantidad, user_id))
-        else:
-            # Usuario pierde
+        # Verificar si el pozo es suficiente para pagar una posible victoria
+        if cantidad * 2 > pozo:
+            # Forzar derrota
             nuevo_saldo = saldo - cantidad
             nuevo_pozo = pozo + cantidad
             resultado = "perdiste"
             cursor.execute('UPDATE users SET saldo = ?, totalgastado = totalgastado + ? WHERE id = ?', (nuevo_saldo, cantidad, user_id))
+        else:
+            # Determinar el resultado basado en la probabilidad de ganar
+            if random.random() < win_probability:
+                # Usuario gana
+                nuevo_saldo = saldo + cantidad
+                nuevo_pozo = pozo - cantidad
+                resultado = "ganaste"
+                cursor.execute('UPDATE users SET saldo = ?, totalganado = totalganado + ? WHERE id = ?', (nuevo_saldo, cantidad, user_id))
+            else:
+                # Usuario pierde
+                nuevo_saldo = saldo - cantidad
+                nuevo_pozo = pozo + cantidad
+                resultado = "perdiste"
+                cursor.execute('UPDATE users SET saldo = ?, totalgastado = totalgastado + ? WHERE id = ?', (nuevo_saldo, cantidad, user_id))
 
         cursor.execute('UPDATE pozo SET amount = ? WHERE id = 1', (nuevo_pozo,))
         cursor.execute('INSERT INTO user_bets (user_id, cantidad, resultado) VALUES (?, ?, ?)', (user_id, cantidad, resultado))
         conn.commit()
 
     return jsonify({'resultado': resultado, 'nuevo_saldo': nuevo_saldo, 'nuevo_pozo': nuevo_pozo})
-
 
 
 def ejecutar():

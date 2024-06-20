@@ -2,6 +2,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
     const betForm = document.getElementById('betForm');
     const settingsForm = document.getElementById('settingsForm');
+    const logoutButton = document.getElementById('logoutButton');
+    const updatePozoForm = document.getElementById('updatePozoForm');
+    const adminSection = document.getElementById('adminSection');
+    const settingsSection = document.getElementById('settingsSection');
+    const resultMessage = document.getElementById('result');
 
     // Verificar si el usuario está logeado
     const user = JSON.parse(localStorage.getItem('user'));
@@ -61,9 +66,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('user', JSON.stringify(user));
                     document.getElementById('balance').textContent = user.saldo;
                     document.getElementById('pozo').textContent = result.nuevo_pozo;
-                    document.getElementById('result').textContent = `You ${result.resultado} and your new balance is ${result.nuevo_saldo}`;
+
+                    resultMessage.textContent = `You ${result.resultado} and your new balance is ${result.nuevo_saldo}`;
+                    if (result.resultado === "ganaste") {
+                        resultMessage.classList.add('success');
+                    } else {
+                        resultMessage.classList.remove('success');
+                    }
                 } else {
-                    document.getElementById('result').textContent = result.error;
+                    resultMessage.textContent = result.error;
                 }
             });
         } else {
@@ -73,27 +84,68 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (settingsForm) {
-        fetch('/settings')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('winProbability').value = data.win_probability;
-                document.getElementById('maxWins').value = data.max_wins;
+        if (user && user.permissions === 'admin') {
+            settingsSection.style.display = 'block';
+
+            fetch('/settings')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('winProbability').value = data.win_probability;
+                    document.getElementById('maxWins').value = data.max_wins;
+                });
+
+            settingsForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const winProbability = document.getElementById('winProbability').value;
+                const maxWins = document.getElementById('maxWins').value;
+
+                const response = await fetch('/settings', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ win_probability: winProbability, max_wins: maxWins })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    document.getElementById('result').textContent = 'Settings updated successfully';
+                } else {
+                    document.getElementById('result').textContent = result.error;
+                }
+            });
+        }
+    }
+
+    if (logoutButton) {
+        logoutButton.addEventListener('click', async () => {
+            const response = await fetch('/logout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
             });
 
-        settingsForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const winProbability = document.getElementById('winProbability').value;
-            const maxWins = document.getElementById('maxWins').value;
+            if (response.ok) {
+                localStorage.removeItem('user');
+                window.location.href = '/login';
+            }
+        });
+    }
 
-            const response = await fetch('/settings', {
+    if (user && user.permissions === 'admin') {
+        adminSection.style.display = 'block';
+
+        updatePozoForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const amount = document.getElementById('pozoAmount').value;
+
+            const response = await fetch('/pozo', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ win_probability: winProbability, max_wins: maxWins })
+                body: JSON.stringify({ amount: amount })
             });
 
             const result = await response.json();
             if (response.ok) {
-                document.getElementById('result').textContent = 'Settings updated successfully';
+                document.getElementById('pozo').textContent = amount;
+                document.getElementById('result').textContent = 'Pozo updated successfully';
             } else {
                 document.getElementById('result').textContent = result.error;
             }

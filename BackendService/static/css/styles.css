@@ -1,21 +1,87 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     text-align: center;
+    background-color: #f4f4f9;
     margin: 0;
     padding: 0;
 }
-form {
+
+h1, h2, h3 {
+    color: #333;
+}
+
+h1 {
     margin-top: 20px;
 }
+
+form {
+    margin-top: 20px;
+    display: inline-block;
+    text-align: left;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 input {
-    margin: 5px;
+    margin: 10px 0;
     padding: 10px;
     font-size: 16px;
+    width: calc(100% - 22px);
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
 }
+
 button {
     padding: 10px 20px;
     font-size: 16px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
-#error {
-    color: red;
+
+button:hover {
+    background-color: #218838;
+}
+
+#error, #result {
+    color: #dc3545;
+    font-size: 18px;
+    margin-top: 20px;
+}
+
+#result.success {
+    color: #28a745;
+}
+
+#adminSection, #settingsSection {
+    display: none;
+}
+
+#adminSection h3, #settingsSection h3 {
+    margin-top: 30px;
+}
+
+#logoutButton {
+    margin-top: 20px;
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+#logoutButton:hover {
+    background-color: #0069d9;
+}
+
+#pozo, #balance {
+    font-weight: bold;
+    color: #007bff;
+}
+
+.hidden {
+    display: none;
 }
