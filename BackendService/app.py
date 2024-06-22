@@ -25,9 +25,9 @@ def init_db():
         cursor.execute('INSERT OR IGNORE INTO pozo (id, amount) VALUES (1, 100000.0)')
         cursor.execute('''CREATE TABLE IF NOT EXISTS settings (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            win_probability REAL DEFAULT 0.5,
-                            max_wins INTEGER DEFAULT 10)''')
-        cursor.execute('INSERT OR IGNORE INTO settings (id, win_probability, max_wins) VALUES (1, 0.5, 10)')
+                            win_probability REAL DEFAULT 0.51,
+                            max_wins INTEGER DEFAULT 50)''')
+        cursor.execute('INSERT OR IGNORE INTO settings (id, win_probability, max_wins) VALUES (1, 0.51, 50)')
         cursor.execute('''CREATE TABLE IF NOT EXISTS user_bets (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             user_id INTEGER NOT NULL,
@@ -71,7 +71,7 @@ def update_pozo_page():
 @app.route('/user/<int:user_id>', methods=['PUT'])
 def update_user(user_id):
     if 'user_id' not in session or session.get('permissions') != 'admin':
-        return jsonify({'error': 'Permission denied'}), 403
+        return jsonify({'error': 'No tienes suficientes permisos'}), 403
 
     data = request.get_json()
     name = data.get('name')
@@ -80,16 +80,16 @@ def update_user(user_id):
     permissions = data.get('permissions')
 
     if not name or not email or not password or not permissions:
-        return jsonify({'error': 'All fields are required'}), 400
+        return jsonify({'error': 'Rellena todos los campos'}), 400
 
     with sqlite3.connect(DATABASE) as conn:
         cursor = conn.cursor()
         cursor.execute('UPDATE users SET name = ?, email = ?, password = ?, permissions = ? WHERE id = ?', (name, email, password, permissions, user_id))
         conn.commit()
         if cursor.rowcount > 0:
-            return jsonify({'message': 'User updated successfully'})
+            return jsonify({'message': 'Usuario actualizado correctamente!'})
         else:
-            return jsonify({'error': 'User not found'}), 404
+            return jsonify({'error': 'Usuario no encontrado!'}), 404
 
 @app.route('/settings')
 def settings_page():
@@ -100,7 +100,7 @@ def settings_page():
 @app.route('/user', methods=['POST'])
 def add_user():
     if 'user_id' not in session or session.get('permissions') != 'admin':
-        return jsonify({'error': 'Permission denied'}), 403
+        return jsonify({'error': 'No tienes suficientes permisos'}), 403
 
     data = request.get_json()
     name = data.get('name')
@@ -108,7 +108,7 @@ def add_user():
     password = data.get('password')
     permissions = data.get('permissions', 'user')
     if not name or not email or not password:
-        return jsonify({'error': 'Name, email, and password are required'}), 400
+        return jsonify({'error': 'Nombre, email y contraseña requeridos'}), 400
 
     with sqlite3.connect(DATABASE) as conn:
         cursor = conn.cursor()
@@ -117,11 +117,11 @@ def add_user():
             conn.commit()
         except sqlite3.IntegrityError as e:
             if 'UNIQUE constraint failed: users.email' in str(e):
-                return jsonify({'error': 'Email already exists'}), 400
+                return jsonify({'error': 'Este Email ya esta registrado'}), 400
             elif 'UNIQUE constraint failed: users.name' in str(e):
-                return jsonify({'error': 'Username already exists'}), 400
+                return jsonify({'error': 'Este Usuario ya esta registrado'}), 400
 
-    return jsonify({'message': 'User added successfully'}), 201
+    return jsonify({'message': 'Usuario creado correctamente'}), 201
 
 @app.route('/users', methods=['GET'])
 def get_users():
@@ -140,40 +140,40 @@ def get_user(user_id):
         if user:
             return jsonify(user)
         else:
-            return jsonify({'error': 'User not found'}), 404
+            return jsonify({'error': 'Usuario no encontrado'}), 404
 
 @app.route('/user/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
     if 'user_id' not in session or session.get('permissions') != 'admin':
-        return jsonify({'error': 'Permission denied'}), 403
+        return jsonify({'error': 'No tienes suficientes permisos'}), 403
 
     with sqlite3.connect(DATABASE) as conn:
         cursor = conn.cursor()
         cursor.execute('DELETE FROM users WHERE id = ?', (user_id,))
         conn.commit()
         if cursor.rowcount > 0:
-            return jsonify({'message': 'User deleted successfully'})
+            return jsonify({'message': 'Usuario borrado con exito'})
         else:
-            return jsonify({'error': 'User not found'}), 404
+            return jsonify({'error': 'Usuario no encontrado'}), 404
 
 @app.route('/user/<int:user_id>/permissions', methods=['PUT'])
 def update_permissions(user_id):
     if 'user_id' not in session or session.get('permissions') != 'admin':
-        return jsonify({'error': 'Permission denied'}), 403
+        return jsonify({'error': 'No tienes suficientes permisos'}), 403
 
     data = request.get_json()
     permissions = data.get('permissions')
     if not permissions:
-        return jsonify({'error': 'Permissions are required'}), 400
+        return jsonify({'error': 'No tienes suficientes permisos'}), 400
 
     with sqlite3.connect(DATABASE) as conn:
         cursor = conn.cursor()
         cursor.execute('UPDATE users SET permissions = ? WHERE id = ?', (permissions, user_id))
         conn.commit()
         if cursor.rowcount > 0:
-            return jsonify({'message': 'Permissions updated successfully'})
+            return jsonify({'message': 'Permisos actualizados'})
         else:
-            return jsonify({'error': 'User not found'}), 404
+            return jsonify({'error': 'Usuario no encontrado'}), 404
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -181,7 +181,7 @@ def login():
     name = data.get('name')
     password = data.get('password')
     if not name or not password:
-        return jsonify({'error': 'Name and password are required'}), 400
+        return jsonify({'error': 'Ingrese usuario y contraseña'}), 400
 
     with sqlite3.connect(DATABASE) as conn:
         cursor = conn.cursor()
@@ -192,37 +192,37 @@ def login():
             session['permissions'] = user[3]
             return jsonify({'id': user[0], 'name': user[1], 'email': user[2], 'permissions': user[3], 'saldo': user[4], 'totalgastado': user[5], 'totalganado': user[6]})
         else:
-            return jsonify({'error': 'Invalid credentials'}), 401
+            return jsonify({'error': 'Credenciales incorrectas'}), 401
 
 @app.route('/logout', methods=['POST'])
 def logout():
     session.pop('user_id', None)
     session.pop('permissions', None)
-    return jsonify({'message': 'Logged out successfully'})
+    return jsonify({'message': 'Cerraste tu sesion'})
 
 @app.route('/user/<int:user_id>/saldo', methods=['PUT'])
 def update_saldo(user_id):
-    if 'user_id' not in session or session.get('permissions') != 'admin':
-        return jsonify({'error': 'Permission denied'}), 403
+   # if 'user_id' not in session  or session.get('permissions') != 'admin':
+    #    return jsonify({'error': 'Permission denied'}), 403
 
     data = request.get_json()
     saldo = data.get('saldo')
     if saldo is None:
-        return jsonify({'error': 'Saldo is required'}), 400
+        return jsonify({'error': 'Saldo es requerido'}), 400
 
     with sqlite3.connect(DATABASE) as conn:
         cursor = conn.cursor()
         cursor.execute('UPDATE users SET saldo = ? WHERE id = ?', (saldo, user_id))
         conn.commit()
         if cursor.rowcount > 0:
-            return jsonify({'message': 'Saldo updated successfully'})
+            return jsonify({'message': 'Saldo actualizado'})
         else:
-            return jsonify({'error': 'User not found'}), 404
+            return jsonify({'error': 'Usuario no encontrado'}), 404
 
 @app.route('/settings', methods=['GET', 'PUT'])
 def settings():
     if 'user_id' not in session or session.get('permissions') != 'admin':
-        return jsonify({'error': 'Permission denied'}), 403
+        return jsonify({'error': 'No tienes suficientes permisos'}), 403
 
     if request.method == 'GET':
         with sqlite3.connect(DATABASE) as conn:
@@ -232,19 +232,19 @@ def settings():
             if settings:
                 return jsonify({'win_probability': settings[0], 'max_wins': settings[1]})
             else:
-                return jsonify({'error': 'Settings not found'}), 404
+                return jsonify({'error': 'No se encontro la configuracion'}), 404
     elif request.method == 'PUT':
         data = request.get_json()
         win_probability = data.get('win_probability')
         max_wins = data.get('max_wins')
         if win_probability is None or max_wins is None:
-            return jsonify({'error': 'win_probability and max_wins are required'}), 400
+            return jsonify({'error': 'win_probability y max_wins son requeridos'}), 400
 
         with sqlite3.connect(DATABASE) as conn:
             cursor = conn.cursor()
             cursor.execute('UPDATE settings SET win_probability = ?, max_wins = ? WHERE id = 1', (win_probability, max_wins))
             conn.commit()
-            return jsonify({'message': 'Settings updated successfully'})
+            return jsonify({'message': 'Configuracion actualizada!'})
 
 @app.route('/pozo', methods=['GET'])
 def get_pozo():
@@ -255,23 +255,23 @@ def get_pozo():
         if pozo:
             return jsonify({'pozo': pozo[0]})
         else:
-            return jsonify({'error': 'Pozo not found'}), 404
+            return jsonify({'error': 'Pozo no encontrado'}), 404
 
 @app.route('/pozo', methods=['PUT'])
 def update_pozo():
     if 'permissions' not in session or session['permissions'] != 'admin':
-        return jsonify({'error': 'Permission denied'}), 403
+        return jsonify({'error': 'No tienes suficientes permisos'}), 403
 
     data = request.get_json()
     amount = data.get('amount')
     if amount is None:
-        return jsonify({'error': 'Amount is required'}), 400
+        return jsonify({'error': 'Se requiere una cantidad'}), 400
 
     with sqlite3.connect(DATABASE) as conn:
         cursor = conn.cursor()
         cursor.execute('UPDATE pozo SET amount = ? WHERE id = 1', (amount,))
         conn.commit()
-        return jsonify({'message': 'Pozo updated successfully'})
+        return jsonify({'message': 'Pozo actualizado'})
 
 @app.route('/edit-user')
 def edit_user_page():
@@ -285,20 +285,20 @@ def apostar(user_id):
     data = request.get_json()
     cantidad = data.get('cantidad')
     if cantidad is None:
-        return jsonify({'error': 'Cantidad is required'}), 400
+        return jsonify({'error': 'Cantidad es requerida'}), 400
 
     # Convertir la cantidad a float
     try:
         cantidad = float(cantidad)
     except ValueError:
-        return jsonify({'error': 'Invalid amount format'}), 400
+        return jsonify({'error': 'Cantidad invalida'}), 400
 
     with sqlite3.connect(DATABASE) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT saldo FROM users WHERE id = ?', (user_id,))
         user = cursor.fetchone()
         if not user:
-            return jsonify({'error': 'User not found'}), 404
+            return jsonify({'error': 'No se encontro el usuario'}), 404
         
         saldo = user[0]
         if cantidad > saldo:
@@ -316,7 +316,7 @@ def apostar(user_id):
         user_wins = cursor.fetchone()[0]
 
         if user_wins >= max_wins:
-            return jsonify({'error': 'Max wins reached'}), 400
+            return jsonify({'error': 'No hay mas tiradas disponibles por hoy, vuelve mañana'}), 400
 
         # Verificar si el pozo es suficiente para pagar una posible victoria
         if cantidad * 2 > pozo:
@@ -350,21 +350,29 @@ def ejecutar():
     if not os.path.exists(DATABASE):
         init_db()
     else:
-        # Verifica si las columnas saldo, totalgastado y totalganado existen, y si no, las agrega
+        # Verifica si las columnas saldo,tiradasleft,tiradasrecord,totalwins,totalloses totalgastado y totalganado existen, y si no, las agrega
         with sqlite3.connect(DATABASE) as conn:
             cursor = conn.cursor()
             cursor.execute("PRAGMA table_info(users)")
             columns = [column[1] for column in cursor.fetchall()]
             if 'saldo' not in columns:
                 cursor.execute("ALTER TABLE users ADD COLUMN saldo REAL DEFAULT 0.0")
+            if 'tiradasleft' not in columns:
+                cursor.execute("ALTER TABLE users ADD COLUMN tiradasleft REAL DEFAULT 10")
+            if 'tiradasrecord' not in columns:
+                cursor.execute("ALTER TABLE users ADD COLUMN tiradasrecord REAL DEFAULT 0.0")
+            if 'totalwincount' not in columns:
+                cursor.execute("ALTER TABLE users ADD COLUMN totalwincount REAL DEFAULT 0.0")
+            if 'totallosecount' not in columns:
+                cursor.execute("ALTER TABLE users ADD COLUMN totallosecount REAL DEFAULT 0.0")
             if 'totalgastado' not in columns:
                 cursor.execute("ALTER TABLE users ADD COLUMN totalgastado REAL DEFAULT 0.0")
             if 'totalganado' not in columns:
                 cursor.execute("ALTER TABLE users ADD COLUMN totalganado REAL DEFAULT 0.0")
             cursor.execute('''CREATE TABLE IF NOT EXISTS pozo (
                                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                                amount REAL DEFAULT 100000.0)''')
-            cursor.execute('INSERT OR IGNORE INTO pozo (id, amount) VALUES (1, 100000.0)')
+                                amount REAL DEFAULT 10000.0)''')
+            cursor.execute('INSERT OR IGNORE INTO pozo (id, amount) VALUES (1, 10000.0)')
             cursor.execute('''CREATE TABLE IF NOT EXISTS settings (
                                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                                 win_probability REAL DEFAULT 0.5,

@@ -3,41 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Betting App</title>
+    <title>Casino del Mar</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>Welcome, <span id="username"></span></h1>
-        <h2>Current Balance: <span id="balance"></span></h2>
-        <h3>Total Pozo: <span id="pozo"></span></h3>
+        <h1>Bienvenid@, <span id="username"></span></h1>
+        <h2>Saldo Disponible: $<span id="balance"></span></h2>
+        <h3>Pozo Vacante: $<span id="pozo"></span></h3> 2
         <form id="betForm">
             <input type="number" id="amount" placeholder="Amount to bet" required>
             <button type="submit">Bet</button>
         </form>
         <p id="result"></p>
-        <div id="settingsSection" class="admin-section hidden">
-            <h3>Settings</h3>
-            <form id="settingsForm">
-                <label for="winProbability">Win Probability:</label>
-                <input type="number" id="winProbability" step="0.01" min="0" max="1" required>
-                <label for="maxWins">Max Wins:</label>
-                <input type="number" id="maxWins" min="1" required>
-                <button type="submit">Update Settings</button>
-            </form>
-        </div>
+     
         <div id="adminSection" class="admin-section hidden">
-            <h3>Admin Panel</h3>
+            <h3>Panel de Administracion</h3>
             <nav>
                 <ul>
-                    <li><a href="/view-users">View Users</a></li>
-                    <li><a href="/create-user">Create User</a></li>
-                    <li><a href="/update-pozo">Update Pozo</a></li>
-                    <li><a href="/settings">Settings</a></li>
+                    <li><a href="/view-users">Ver Usuario</a></li>
+                    <li><a href="/create-user">Crear Usuario</a></li>
+                    <li><a href="/update-pozo">Actualizar Pozo</a></li>
+                    <li><a href="/settings">Configuracion</a></li>
                 </ul>
             </nav>
         </div>
-        <button id="logoutButton">Logout</button>
+
+        <div id="settingsSection" class="admin-section hidden">
+            <h3>Configuracion</h3>
+            <form id="settingsForm">
+                <label for="winProbability">0-1 Ratio:</label>
+                <input type="number" id="winProbability" step="0.01" min="0" max="1" required>
+                <label for="maxWins">Jugadas Maximas:</label>
+                <input type="number" id="maxWins" min="1" required>
+                <button type="submit">Actualizar Configuracion</button>
+            </form>
+        </div>
+        
+        <button id="logoutButton">Salir</button>
     </div>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
