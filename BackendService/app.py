@@ -202,8 +202,8 @@ def logout():
 
 @app.route('/user/<int:user_id>/saldo', methods=['PUT'])
 def update_saldo(user_id):
-   # if 'user_id' not in session  or session.get('permissions') != 'admin':
-    #    return jsonify({'error': 'Permission denied'}), 403
+    if 'user_id' not in session  or session.get('permissions') != 'admin':
+        return jsonify({'error': 'Permission denied'}), 403
 
     data = request.get_json()
     saldo = data.get('saldo')
