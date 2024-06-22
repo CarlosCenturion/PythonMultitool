@@ -24,6 +24,20 @@
         </tbody>
     </table>
     <button id="backButton">Back to Admin Panel</button>
+
+    <!-- Edit Balance Modal -->
+    <div id="editBalanceModal" class="">
+        <div class="">
+            <span id="closeModalButton" class="close-button">&times;</span>
+            <h2>Edit Balance</h2>
+            <form id="editBalanceForm">
+                <label for="editBalanceAmount">New Balance:</label>
+                <input type="number" id="editBalanceAmount" name="balance" required>
+                <button type="submit">Update Balance</button>
+            </form>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', filename='js/view_users.js') }}"></script>
 </body>
 </html>
