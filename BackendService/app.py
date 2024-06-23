@@ -47,6 +47,7 @@ def login_page():
 @app.route('/admin')
 def admin_page():
     if 'user_id' not in session or session.get('permissions') != 'admin':
+        
         return redirect(url_for('login_page'))
     return render_template('admin.html')
 
@@ -125,6 +126,9 @@ def add_user():
 
 @app.route('/users', methods=['GET'])
 def get_users():
+    if 'user_id' not in session or session.get('permissions') != 'admin':
+        return jsonify({'error': 'No tienes suficientes permisos'}), 403
+
     with sqlite3.connect(DATABASE) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT id, name, email, permissions, saldo, totalgastado, totalganado FROM users')
@@ -133,6 +137,9 @@ def get_users():
 
 @app.route('/user/<int:user_id>', methods=['GET'])
 def get_user(user_id):
+    if 'user_id' not in session or session.get('permissions') != 'admin':
+        return jsonify({'error': 'No tienes suficientes permisos'}), 403
+
     with sqlite3.connect(DATABASE) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT id, name, email, permissions, saldo, totalgastado, totalganado FROM users WHERE id = ?', (user_id,))
@@ -202,7 +209,7 @@ def logout():
 
 @app.route('/user/<int:user_id>/saldo', methods=['PUT'])
 def update_saldo(user_id):
-    if 'user_id' not in session  or session.get('permissions') != 'admin':
+    if 'user_id' not in session or session.get('permissions') != 'admin':
         return jsonify({'error': 'Permission denied'}), 403
 
     data = request.get_json()
@@ -278,7 +285,6 @@ def edit_user_page():
     if 'user_id' not in session or session.get('permissions') != 'admin':
         return redirect(url_for('login_page'))
     return render_template('edit_user.html')
-
 
 @app.route('/user/<int:user_id>/apostar', methods=['POST'])
 def apostar(user_id):
@@ -388,4 +394,5 @@ def ejecutar():
     app.run(debug=True)
 
 if __name__ == '__main__':
+    print("Ejecutando APP.py")
     ejecutar()

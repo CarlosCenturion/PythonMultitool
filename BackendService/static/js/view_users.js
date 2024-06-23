@@ -24,9 +24,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td>${user[3]}</td>
                     <td>${user[4]}</td>
                     <td>
-                        <button class="edit-user" data-id="${user[0]}">Edit</button>
-                        <button class="delete-user" data-id="${user[0]}">Delete</button>
-                        <button class="edit-balance" data-id="${user[0]}">Edit Balance</button>
+                        <div class="btn-group" role="group" aria-label="Actions">
+                            <button class="btn btn-warning btn-sm edit-user" data-id="${user[0]}">Edit</button>
+                            <button class="btn btn-danger btn-sm delete-user" data-id="${user[0]}">Delete</button>
+                            <button class="btn btn-primary btn-sm edit-balance" data-id="${user[0]}" data-toggle="modal" data-target="#editBalanceModal">Edit Balance</button>
+                        </div>
                     </td>
                 `;
                 usersTableBody.appendChild(row);
@@ -59,7 +61,10 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.edit-balance').forEach(button => {
                 button.addEventListener('click', event => {
                     currentUserId = event.target.getAttribute('data-id');
-                    editBalanceModal.classList.remove('hidden');
+                    const modal = document.getElementById('editBalanceModal');
+                    const balanceInput = modal.querySelector('#editBalanceAmount');
+                    balanceInput.value = ''; // Reset balance input
+                    $('#editBalanceModal').modal('show'); // Show the modal using Bootstrap's modal method
                 });
             });
         });
@@ -68,12 +73,11 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = '/admin';
     });
 
-    closeModalButton.addEventListener('click', () => {
-        editBalanceModal.classList.add('hidden');
-    });
+    
 
     editBalanceForm.addEventListener('submit', async (event) => {
         event.preventDefault();
+        alert('Intentando cargar saldo');
         const newBalance = document.getElementById('editBalanceAmount').value;
 
         const response = await fetch(`/user/${currentUserId}/saldo`, {
@@ -85,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const result = await response.json();
         if (response.ok) {
             alert('Balance updated successfully');
-            editBalanceModal.classList.add('hidden');
+            $('#editBalanceModal').modal('hide'); // Hide the modal using Bootstrap's modal method
             window.location.reload();
         } else {
             alert(result.error);

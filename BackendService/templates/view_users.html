@@ -4,40 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Users</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <h1>View Users</h1>
-    <table id="usersTable">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Permissions</th>
-                <th>Balance</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- User rows will be added here -->
-        </tbody>
-    </table>
-    <button id="backButton">Back to Admin Panel</button>
+    <div class="container mt-5">
+        <h1 class="text-center">View Users</h1>
+        <table id="usersTable" class="table table-striped mt-4">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Permissions</th>
+                    <th>Balance</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- User rows will be added here -->
+            </tbody>
+        </table>
+        <button id="backButton" class="btn btn-secondary btn-block mt-4">Back to Admin Panel</button>
+    </div>
 
     <!-- Edit Balance Modal -->
-    <div id="editBalanceModal" class="">
-        <div class="">
-            <span id="closeModalButton" class="close-button">&times;</span>
-            <h2>Edit Balance</h2>
-            <form id="editBalanceForm">
-                <label for="editBalanceAmount">New Balance:</label>
-                <input type="number" id="editBalanceAmount" name="balance" required>
-                <button type="submit">Update Balance</button>
-            </form>
+    <div id="editBalanceModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Edit Balance</h2>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="editBalanceForm">
+                        <div class="form-group">
+                            <label for="editBalanceAmount">New Balance:</label>
+                            <input type="number" id="editBalanceAmount" name="balance" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Update Balance</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="{{ url_for('static', filename='js/view_users.js') }}"></script>
+    <script>
+        // Script to show modal when Edit Balance button is clicked
+        document.addEventListener('DOMContentLoaded', function () {
+            $('#editBalanceModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var userId = button.data('userid'); // Extract info from data-* attributes
+                var modal = $(this);
+                modal.find('.modal-body #editBalanceAmount').val('');
+                // Add additional logic to handle the user ID if necessary
+            });
+        });
+    </script>
 </body>
 </html>

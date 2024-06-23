@@ -4,44 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Casino del Mar</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <div class="container">
-        <h1>Bienvenid@, <span id="username"></span></h1>
-        <h2>Saldo Disponible: $<span id="balance"></span></h2>
-        <h3>Pozo Vacante: $<span id="pozo"></span></h3> 
-        <form id="betForm">
-            <input type="number" id="amount" placeholder="Amount to bet" required>
-            <button type="submit">Bet</button>
+    <div class="container mt-5">
+        <h1 class="text-center">Bienvenid@, <span id="username"></span></h1>
+        <h2 class="text-center">Saldo Disponible: $<span id="balance"></span></h2>
+        <h3 class="text-center">Pozo Vacante: $<span id="pozo"></span></h3> 
+        
+        <form id="betForm" class="text-center mt-4">
+            <div class="form-group">
+                <input type="number" id="amount" class="form-control d-inline-block w-auto" placeholder="Amount to bet" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Bet</button>
         </form>
-        <p id="result"></p>
+        <p id="result" class="text-center mt-3"></p>
      
-        <div id="adminSection" class="admin-section hidden">
-            <h3>Panel de Administracion</h3>
+        <div id="adminSection" class="admin-section hidden mt-5">
+            <h3>Panel de Administración</h3>
             <nav>
-                <ul>
-                    <li><a href="/view-users">Ver Usuario</a></li>
-                    <li><a href="/create-user">Crear Usuario</a></li>
-                    <li><a href="/update-pozo">Actualizar Pozo</a></li>
-                    <li><a href="/settings">Configuracion</a></li>
+                <ul class="nav flex-column">
+                    <li class="nav-item"><a class="nav-link" href="/view-users">Ver Usuarios</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/create-user">Crear Usuario</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/update-pozo">Actualizar Pozo</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/settings">Configuración</a></li>
                 </ul>
             </nav>
         </div>
 
-        <div id="settingsSection" class="admin-section hidden">
-            <h3>Configuracion</h3>
+        <div id="settingsSection" class="admin-section hidden mt-5">
+            <h3>Configuración</h3>
             <form id="settingsForm">
-                <label for="winProbability">0-1 Ratio:</label>
-                <input type="number" id="winProbability" step="0.01" min="0" max="1" required>
-                <label for="maxWins">Jugadas Maximas:</label>
-                <input type="number" id="maxWins" min="1" required>
-                <button type="submit">Actualizar Configuracion</button>
+                <div class="form-group">
+                    <label for="winProbability">0-1 Ratio:</label>
+                    <input type="number" id="winProbability" class="form-control" step="0.01" min="0" max="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="maxWins">Jugadas Máximas:</label>
+                    <input type="number" id="maxWins" class="form-control" min="1" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Actualizar Configuración</button>
             </form>
         </div>
         
-        <button id="logoutButton">Salir</button>
+        <button id="logoutButton" class="btn btn-danger mt-4">Salir</button>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

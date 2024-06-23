@@ -4,21 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create User</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <h1>Create User</h1>
-    <form id="createUserForm">
-        <input type="text" id="newUserName" placeholder="Username" required>
-        <input type="email" id="newUserEmail" placeholder="Email" required>
-        <input type="password" id="newUserPassword" placeholder="Password" required>
-        <select id="newUserPermissions">
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
-        </select>
-        <button type="submit">Create User</button>
-    </form>
-    <button id="backButton">Back to Admin Panel</button>
+    <div class="container mt-5">
+        <h1 class="text-center">Create User</h1>
+        <form id="createUserForm" class="mt-4">
+            <div class="form-group">
+                <input type="text" id="newUserName" class="form-control" placeholder="Username" required>
+            </div>
+            <div class="form-group">
+                <input type="email" id="newUserEmail" class="form-control" placeholder="Email" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="newUserPassword" class="form-control" placeholder="Password" required>
+            </div>
+            <div class="form-group">
+                <select id="newUserPermissions" class="form-control">
+                    <option value="user">User</option>
+                    <option value="manager">Manager</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Create User</button>
+        </form>
+        <button id="backButton" class="btn btn-secondary btn-block mt-3">Back to Admin Panel</button>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="{{ url_for('static', filename='js/create_user.js') }}"></script>
 </body>
 </html>

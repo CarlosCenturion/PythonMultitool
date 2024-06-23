@@ -4,18 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <h1>Settings</h1>
-    <form id="settingsForm">
-        <label for="winProbability">Win Probability:</label>
-        <input type="number" id="winProbability" step="0.01" min="0" max="1" required>
-        <label for="maxWins">Max Wins:</label>
-        <input type="number" id="maxWins" min="1" required>
-        <button type="submit">Update Settings</button>
-    </form>
-    <button id="backButton">Back to Admin Panel</button>
+    <div class="container mt-5">
+        <h1 class="text-center">Settings</h1>
+        <form id="settingsForm" class="mt-4">
+            <div class="form-group">
+                <label for="winProbability">Win Probability:</label>
+                <input type="number" id="winProbability" class="form-control" step="0.01" min="0" max="1" required>
+            </div>
+            <div class="form-group">
+                <label for="maxWins">Max Wins:</label>
+                <input type="number" id="maxWins" class="form-control" min="1" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Update Settings</button>
+        </form>
+        <button id="backButton" class="btn btn-secondary btn-block mt-3">Back to Admin Panel</button>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
 </body>
 </html>

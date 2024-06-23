@@ -15,7 +15,7 @@ h1 {
 }
 
 .container {
-    max-width: 600px;
+    max-width: 1000px; /* Ajustado para tablas más anchas */
     margin: 0 auto;
     padding: 20px;
 }
@@ -115,20 +115,7 @@ nav ul li a:hover {
     color: #11dd5f;
 }
 
-/* Existing styles */
-
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
-}
-
+/* Modal styles */
 .modal-content {
     background-color: #fff;
     margin: 15% auto;
@@ -151,4 +138,45 @@ nav ul li a:hover {
     color: black;
     text-decoration: none;
     cursor: pointer;
+}
+
+/* Custom Bootstrap Overrides */
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0069d9;
+}
+
+.nav-link {
+    color: #007bff;
+}
+
+.nav-link:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* Custom form controls */
+.form-control {
+    border-radius: 4px;
+    box-shadow: none;
+    border-color: #ddd;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Align buttons in a row */
+.btn-group {
+    display: flex;
+    justify-content: center;
+}
+
+.btn-group .btn {
+    margin: 0 5px;
 }

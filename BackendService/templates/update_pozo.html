@@ -4,15 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Pozo</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <h1>Update Pozo</h1>
-    <form id="updatePozoForm">
-        <input type="number" id="pozoAmount" placeholder="New pozo amount" required>
-        <button type="submit">Update Pozo</button>
-    </form>
-    <button id="backButton">Back to Admin Panel</button>
+    <div class="container mt-5">
+        <h1 class="text-center">Update Pozo</h1>
+        <form id="updatePozoForm" class="mt-4">
+            <div class="form-group">
+                <input type="number" id="pozoAmount" class="form-control" placeholder="New pozo amount" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Update Pozo</button>
+        </form>
+        <button id="backButton" class="btn btn-secondary btn-block mt-3">Back to Admin Panel</button>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="{{ url_for('static', filename='js/update_pozo.js') }}"></script>
 </body>
 </html>
