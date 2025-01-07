@@ -1,4 +1,4 @@
-colorama
-psutil
-pynvml
 GPUtil
+psutil
+colorama
+pynvml

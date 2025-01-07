@@ -1,12 +1,9 @@
 
-numpy
-selenium==4.2.0
 colorama
-pandas
-scipy
-opencv-python
-qrcode
-gensim
+numpy
 Pillow
-pyzbar
 Flask==2.0.1
+matplotlib
+datetime
+pandas
+scikit-learn
